@@ -1,0 +1,120 @@
+\chapter{Introdução}
+
+Tendo em vista o desafio de prover Inclusão Digital, principalmente para
+populações que não cresceram tendo acesso aos meios digitais, seja por falta de
+recursos e oportunidade, seja por questões temporais, propomos o
+desenvolvimento de uma plataforma educacional voltada para este público. A
+ideia é prover cursos e guias de simples acesso para guiar o uso dos meios
+digitais desde os primeiros fundamentos, promovendo instrução de uso,
+conscientização e uma futura independência digital.
+
+Sendo assim, tomamos como inspiração uma das maiores plataformas educacionais
+de livre acesso hoje disponíveis, a \textit{Khan Academy}, porém mudando seu
+propósito para além do mundo acadêmico e tentando enfatizar a acessibilidade
+àqueles que não estão habituados aos meios digitais.
+
+\chapter{Modelo Entidade-Relacionamento}
+
+\section{Levantamento de Requisitos}
+
+Um usuário do sistema poderá utilizar a plataforma de forma anônima (não
+autenticada) ou de maneira identificável. Para que isso seja possível, um
+usuário pode se cadastrar de maneira simples \textbf{(usuário autenticado)},
+inserindo apenas um \textbf{nome de usuário} (3 a 16 caracteres), uma
+\textbf{senha} (que será armazenada como uma hash, estimando 144 caracteres
+necessários para sua persistência) e, opcionalmente, um \textbf{e-mail}
+(ocupando no máximo 254 caracteres). Além disso, para moderar a plataforma e
+atualizá-la com mais conteúdos, teremos também \textbf{usuários
+  administrativos}, esses são semelhante aos usuários convencionais, sendo
+diferenciados por um booleano \textbf{admin}, além disso todo administrador
+deve obrigatoriamente conter um e-mail cadastrado que será utilizado para
+autenticação em dois fatores.
+
+Um \textbf{administrador} pode banir um usuário da plataforma, quando isso
+ocorre temos a entidade de \textbf{banimento}, nela são indicados: o
+\textbf{responsável} (referência ao administrador) responsável pelo banimento,
+o \textbf{usuário alvo} (referência ao usuário banido), o \textbf{horário}
+(data e hora de criação), a \textbf{validade} (data e hora em que o banimento
+expira) e, opcionalmente, a \textbf{causa} (texto) do banimento. Além disso,
+temos algumas restrições de integridade, sendo elas: o \textit{responsável} tem
+que ser um \textit{administrador} e o \textit{usuário alvo} não pode ser um
+\textit{administrador}.
+
+A ideia é que esse seja um projeto dirigido e voltado para a comunidade, por
+conta disso é bastante importante que usuários consigam prover feedbacks,
+sugerindo melhorias, apontando problemas encontrados e solicitando novos
+tópicos. Esses feedbacks, então, terão uma referência de qual é o autor
+(referência ao usuário que criou o feedback), a mensagem (texto de tamanho
+dinâmico, limitado arbitrariamente à 4096 caracteres). Além disso, a fim de
+garantir a validação dos feedbacks, temos uma entidade de visualização de
+feedback, ela associa unicamente um leitor (referência ao usuário
+administrador) e um feedback (referência ao feedback), incluindo as
+informações: data de primeira abertura (data e hora da primeira abertura do
+feedback por parte daquele administrador), data da última abertura (data e hora
+da última abertura por parte daquele administrador) e a data de resolução (data
+e hora indicando o momento em que aquele feedback foi marcado como resolvido
+por aquele administrador, nulo quando não marcado como resolvido).
+
+A fim de organizar o conteúdo, seguiremos uma divisão hierárquica bastante
+comum, seguindo em: categorias, tópicos, unidades e aulas, do maior para o
+menor, respectivamente. Primeiramente, teremos a categoria, sendo o nível mais
+alto da hierarquia, ela é bastante simples, tendo apenas um nome (texto), uma
+descrição (texto) e um ícone (url). Em sequência, temos os cursos, que contém
+um nome (texto), uma descrição (texto) e a categoria (referência à categoria).
+Seguindo adiante, teremos as unidades, nosso próximo nível na hierarquia. As
+unidades seguem uma estrutura similar, contendo um nome (texto), uma descrição
+(texto), sua ordem (inteiro), que é usada para controlar a ordem em que as
+unidades são apresentadas, e o curso (referência à curso) a qual pertence.
+Descendo mais um nível, temos os tópicos, a estrutura dos tópicos é também
+semelhante aos anteriores, tendo um nome (texto), uma descrição (texto), e, por
+fim, a unidade (referência a unidade) a qual pertence. Por último temos as
+aulas, elas são o nível mais baixo na hierarquia organizacional, abrigando os
+conteúdos em si. As aulas seguem praticamente a mesma estrutura das unidades,
+ou seja, possuem um nome (texto), uma descrição (texto), uma ordem (inteiro) e,
+por fim, o tópico (referência ao tópico) a qual pertence.
+
+Um dos principais elementos da plataforma, que seria a linha final desta
+hierarquia, são os conteúdos, todos os conteúdos terão alguns campos em comum:
+um título (texto), um subtítulo (texto) e uma duração estimada (inteiro
+indicando o número de minutos indicados). Além disso, inicialmente, teremos
+três tipos de conteúdo: artigos, que seriam conteúdos primariamente textuais,
+contendo, além dos comuns entre os conteúdos, o corpo do artigo (que será um
+texto formatado em MD). Teremos também, os vídeos, que contém o link do vídeo
+(url) e uma descrição (texto) do vídeo. Por fim, teremos os exercícios, eles
+são compostos de um enunciado (texto formato em MD), um conjunto de
+alternativas (quantidade variável, podendo ter 0), limite de seleções de
+alternativas (inteiro indicando quantas alternativas um usuário pode
+selecionar). Cada alternativa consiste simplesmente um corpo (texto formatado
+em MD), opcionalmente, uma explicação (texto formatado em MD) e se é uma
+alternativa correta (booleano). Usar uma combinação de exercício e texto para
+identificar unicamente alternativas.
+
+Para usuários autenticados, será mantido um histórico do progresso dele na
+plataforma, isto é: para cada conteúdo, será registrado um evento de progresso,
+indicando o horário onde foi feito o progresso, qual o conteúdo (referência ao
+conteúdo) que foi visitado e, caso o conteúdo seja um exercício, as
+alternativas selecionadas (referências às alternativas). Importante notar que
+as alternativas selecionadas precisam fazer parte do conteúdo do tipo exercício
+referente ao evento. Os eventos de progresso podem ser visualizados pelo
+usuário e podem existir mais de um evento para o mesmo conteúdo. O usuário pode
+deletar eventos antigos a fim de reiniciar o seu progresso de acordo com a
+granularidade desejada.
+
+Além disso, usuários autenticados, podem deixar comentários em conteúdos, cada
+comentário é composto por um corpo (texto em MD), o autor (referência ao
+usuário que o criou), o conteúdo (referência ao conteúdo) em que o comentário
+foi feito, o horário (data e hora de criação) em que o horário foi feito, se
+ele é visível (booleano indicando se ele é exibido) para casos de deleção e,
+por fim, um comentário pode ser uma resposta, nesses casos temos o campo de
+comentário pai (referência opcional a um comentário) que indica qual comentário
+aquele responde. A presença desse mecanismo de respostas cria uma restrição de
+integridade onde precisamos garantir que, caso o comentário seja uma resposta,
+o conteúdo associado ao comentário pai seja o mesmo que o conteúdo referenciado
+presente em si. Adicionar motivo.
+
+A fim de garantir a moderação da plataforma, usuários autenticados podem
+reportar comentários, para isso temos a entidade de report. Cada report
+consiste de um autor (referência ao usuário que fez o report), o comentário
+reportado (referência ao comentário sendo reportado), o horário (data e hora de
+criação) e, por fim, o indicador de verificado (booleano), que indica que
+aquele report já foi avaliado por um administrador.
