@@ -25,6 +25,8 @@
 \usepackage{afterpage}
 \usepackage{indentfirst} % indenta todos os primeiros parágrafos
 \usepackage{setspace}
+\usepackage[export]{adjustbox}
+\usepackage{pdflscape}
 \usepackage{titlesec}
 \renewcommand{\ABNTEXchapterfontsize}{\bfseries\normalsize}
 \renewcommand{\ABNTEXsectionfontsize}{\bfseries\normalsize}
@@ -61,7 +63,7 @@
 % "Referências" em letras maiúsculas
 \addto\captionsbrazil{%
   \renewcommand{\bibname}%
-  {REFERÊNCIAS}%
+  {Referências}%
 }
 
 \frenchspacing % Retira espaço obsoleto entre as frases.
@@ -81,5 +83,10 @@
 \pagestyle{simple}
 
 \input{conteudo}
+
+\bibliography{referencias}
+
+\nocite{elmasri7}
+\nocite{silberschatz7}
 
 \end{document}

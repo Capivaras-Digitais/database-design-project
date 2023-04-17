@@ -26,30 +26,28 @@ propósito para além do mundo acadêmico e tentando enfatizar a acessibilidade
 
 Um usuário do sistema poderá utilizar a plataforma de forma anônima (não
 autenticada) ou de maneira identificável. Para que isso seja possível, um
-usuário pode se cadastrar de maneira simples \textbf{(usuário autenticado)},
-inserindo apenas um \textbf{nome de usuário} (3 a 16 caracteres), uma
-\textbf{senha} (que será armazenada como uma hash, estimando 144 caracteres
-necessários para sua persistência) e, opcionalmente, um \textbf{e-mail}
-(ocupando no máximo 254 caracteres). Além disso, para moderar a plataforma e
-atualizá-la com mais conteúdos, teremos também \textbf{usuários
-  administrativos}, esses são semelhante aos usuários convencionais, sendo
-diferenciados por um booleano \textbf{admin}, além disso todo administrador
-deve obrigatoriamente conter um e-mail cadastrado que será utilizado para
-autenticação em dois fatores.
+usuário pode se cadastrar de maneira simples \textbf{\textit{(usuário
+    autenticado)}}, inserindo apenas um \textbf{\underline{nome de usuário}} (3 a
+16 caracteres), uma \textbf{senha} (que será armazenada como uma hash,
+estimando 144 caracteres necessários para sua persistência) e, opcionalmente,
+um \textbf{e-mail} (ocupando no máximo 254 caracteres). Além disso, para
+moderar a plataforma e atualizá-la com mais conteúdos, teremos também
+\textbf{\textit{usuários administrativos}}, esses são semelhante aos usuários
+convencionais, sendo diferenciados por um booleano \textbf{admin}, além disso
+todo administrador deve obrigatoriamente conter um e-mail cadastrado que será
+utilizado para autenticação em dois fatores.
 
 %%%%%%%%%%%%%%
 % Banimentos %
 %%%%%%%%%%%%%%
 
-Um \textbf{administrador} pode banir um usuário da plataforma, quando isso
-ocorre temos a entidade de \textbf{banimento}, nela são indicados: o
-\textbf{responsável} (referência ao administrador) responsável pelo banimento,
-o \textbf{usuário alvo} (referência ao usuário banido), o \textbf{horário}
-(data e hora de criação), a \textbf{validade} (data e hora em que o banimento
-expira) e, opcionalmente, a \textbf{causa} (texto) do banimento. Além disso,
-temos algumas restrições de integridade, sendo elas: o \textit{responsável} tem
-que ser um \textit{administrador} e o \textit{usuário alvo} não pode ser um
-\textit{administrador}.
+Um \textit{administrador} pode banir um usuário da plataforma, quando isso
+ocorre temos a entidade de \textbf{\textit{banimento}}, nela são indicados: o
+\textbf{\underline{responsável}} (referência ao administrador) responsável pelo
+banimento, o \textbf{\underline{usuário banido}} (referência ao usuário
+banido), o \textbf{\underline{horário}} (data e hora de criação), a
+\textbf{validade} (data e hora em que o banimento expira) e, opcionalmente, a
+\textbf{causa} (texto) do banimento. Administradores não podem ser banidos.
 
 %%%%%%%%%%%%%
 % Feedbacks %
@@ -57,62 +55,66 @@ que ser um \textit{administrador} e o \textit{usuário alvo} não pode ser um
 
 A ideia é que esse seja um projeto dirigido e voltado para a comunidade, por
 conta disso é bastante importante que usuários consigam prover
-\textbf{feedbacks}, sugerindo melhorias, apontando problemas encontrados e
-solicitando novos tópicos. Esses feedbacks, então, terão uma referência de qual
-é o \textbf{autor} (referência ao usuário que criou o feedback), a
-\textbf{mensagem} (texto de tamanho dinâmico, limitado arbitrariamente à 4096
-caracteres) e, opcionalmente, a \textbf{data de resolução} (data e hora quando
-o feedback foi marcado como resolvido). Além disso, a fim de garantir a
-validação dos feedbacks, temos uma entidade de \textbf{visualização de
-  feedback}, ela associa um \textbf{leitor} (referência ao usuário administrador)
-e um \textbf{feedback} (referência ao feedback) junto à informação da
-\textbf{data de visualização} (data e hora quando a visualização foi feita).
+\textbf{\textit{feedbacks}}, sugerindo melhorias, apontando problemas
+encontrados e solicitando novos tópicos. Esses feedbacks, então, terão uma
+referência de qual é o \textbf{\underline{autor}} (referência ao usuário que
+criou o feedback), o \textbf{\underline{horário}} (data e hora de criação do
+feedback) a \textbf{mensagem} (texto de tamanho dinâmico, limitado
+arbitrariamente à 4096 caracteres) e, opcionalmente, a \textbf{data de
+  fechamento} (data e hora quando o feedback foi fechado). Além disso, a fim de
+garantir a visualização dos feedbacks, temos uma entidade de
+\textbf{\textit{visualização de feedback}}, ela associa um
+\textbf{\underline{leitor}} (referência ao usuário administrador) e um
+\textbf{\underline{feedback}} (referência ao feedback) junto à informação da
+\textbf{\underline{data de visualização}} (data e hora quando a visualização
+foi feita).
 
 %%%%%%%%%%%%%%%
 % Organização %
 %%%%%%%%%%%%%%%
 
 A fim de organizar o conteúdo, seguiremos uma divisão hierárquica bastante
-comum, seguindo em: categorias, tópicos, unidades e aulas, do maior para o
-menor, respectivamente. Primeiramente, teremos a \textbf{categoria}, sendo o
-nível mais alto da hierarquia, ela é bastante simples, tendo apenas um
-\textbf{nome} (texto), uma \textbf{descrição} (texto) e um \textbf{ícone}
-(url). Em sequência, temos os \textbf{cursos}, que contém um \textbf{nome}
-(texto), uma \textbf{descrição} (texto) e a \textbf{categoria} (referência à
-categoria). Seguindo adiante, teremos as \textbf{unidades}, nosso próximo nível
-na hierarquia. As unidades seguem uma estrutura similar, contendo um
-\textbf{nome} (texto), uma \textbf{descrição} (texto), sua \textbf{ordem}
-(inteiro), que é usada para controlar a ordem em que as unidades são
-apresentadas, e o \textbf{curso} (referência à curso) a qual pertence. Descendo
-mais um nível, temos os \textbf{tópicos}, a estrutura dos tópicos é também
-semelhante aos anteriores, tendo um \textbf{nome} (texto), uma
-\textbf{descrição} (texto), e, por fim, a \textbf{unidade} (referência a
-unidade) a qual pertence. Por último temos as \textbf{aulas}, elas são o nível
-mais baixo na hierarquia organizacional, abrigando os conteúdos em si. As aulas
-seguem praticamente a mesma estrutura das unidades, ou seja, possuem um
-\textbf{nome} (texto), uma \textbf{descrição} (texto), uma \textbf{ordem}
-(inteiro) e, por fim, o \textbf{tópico} (referência ao tópico) a qual pertence.
+comum, seguindo em: categorias, tópicos, unidades e conteúdos, do maior para o
+menor, respectivamente. Primeiramente, teremos a \textbf{\textit{categoria}},
+sendo o nível mais alto da hierarquia, ela é bastante simples, tendo apenas um
+\textbf{\underline{nome}} (texto), uma \textbf{descrição} (texto) e um
+\textbf{ícone} (url). Em sequência, temos os \textbf{\textit{cursos}}, que
+contém um \textbf{\underline{nome}} (texto), uma \textbf{descrição} (texto) e a
+\textbf{\underline{categoria}} (referência à categoria). Seguindo adiante,
+teremos as \textbf{\textit{unidades}}, nosso próximo nível na hierarquia. As
+unidades seguem uma estrutura similar, contendo um \textbf{\underline{nome}}
+(texto), uma \textbf{descrição} (texto), sua \textbf{ordem} (inteiro), que é
+usada para controlar a ordem em que as unidades são apresentadas, e o
+\textbf{\underline{curso}} (referência à curso) a qual pertence. Por último
+temos os \textbf{\textit{tópicos}}, eles são o nível mais baixo na hierarquia
+organizacional, abrigando os conteúdos em si. Os tópicos seguem praticamente a
+mesma estrutura das unidades, ou seja, possuem um \textbf{\underline{nome}}
+(texto), uma \textbf{descrição} (texto), uma \textbf{ordem} (inteiro) e, por
+fim, a \textbf{\underline{unidade}} (referência à unidade) a qual pertencem.
 
 %%%%%%%%%%%%%
 % Conteúdos %
 %%%%%%%%%%%%%
 
 Um dos principais elementos da plataforma, que seria a linha final desta
-hierarquia, são os \textbf{conteúdos}, todos os conteúdos terão alguns campos
-em comum: um \textbf{título} (texto), um \textbf{subtítulo} (texto) e uma
-\textbf{duração estimada} (inteiro indicando o número de minutos indicados).
-Além disso, inicialmente, teremos três tipos de conteúdo: \textbf{artigos}, que
-seriam conteúdos primariamente textuais, contendo, além dos comuns entre os
+hierarquia, são os \textbf{\textit{conteúdos}}, todos os conteúdos terão alguns
+campos em comum: um \textbf{\underline{título}} (texto), um \textbf{subtítulo}
+(texto), uma \textbf{duração estimada} (inteiro indicando o número de minutos)
+e o \textbf{\underline{tópico}} (referência ao tópico) a qual pertence. Além
+disso, inicialmente, teremos três tipos de conteúdo: \textbf{\textit{artigos}},
+que seriam conteúdos primariamente textuais, contendo, além dos comuns entre os
 conteúdos, o \textbf{corpo} do artigo (que será um texto formatado em MD).
-Teremos também, os \textbf{vídeos}, que contém a \textbf{url} do vídeo (texto)
-e uma \textbf{descrição} (texto) do vídeo. Por fim, teremos os
-\textbf{exercícios}, eles são compostos de um \textbf{enunciado} (texto formato
-em MD), um conjunto de \textbf{alternativas} (quantidade variável, podendo ter
-0), \textbf{limite de seleções de alternativas} (inteiro indicando quantas
-alternativas um usuário pode selecionar). Cada \textbf{alternativa} consiste
-simplesmente um \textbf{corpo} (texto formatado em MD), opcionalmente, uma
-\textbf{explicação} (texto formatado em MD) e se é uma alternativa
-\textbf{correta} (booleano).
+Teremos também, os \textbf{\textit{vídeos}}, que contém a \textbf{url} do vídeo
+(texto) e uma \textbf{descrição} (texto) do vídeo. Por fim, teremos os
+\textbf{\textit{exercícios}}, eles são compostos de um \textbf{enunciado
+  (corpo)} (texto formato em MD) e o \textbf{limite de seleções de alternativas}
+(inteiro indicando quantas alternativas um usuário pode selecionar). Além
+disso, os \textit{exercícios} possuem um número variável de alternativas
+associadas, cada \textbf{\textit{alternativa}} consiste de um
+\textbf{\underline{corpo}} (texto formatado em MD), opcionalmente, uma
+\textbf{explicação} (texto formatado em MD), se é uma alternativa
+\textbf{correta} (booleano) e, por fim, o \textbf{\underline{exercício}}
+(referência ao exercício) que faz parte.
 
 %%%%%%%%%%%%%
 % Histórico %
@@ -120,48 +122,48 @@ simplesmente um \textbf{corpo} (texto formatado em MD), opcionalmente, uma
 
 Para \textit{usuários autenticados}, será mantido um histórico do progresso
 dele na plataforma, isto é: para cada \textit{conteúdo}, será registrado um
-\textbf{evento de progresso} (histórico no MER), indicando o \textbf{horário}
-(data e hora) onde foi feito o progresso, qual o \textbf{conteúdo} (referência
-ao conteúdo) que foi visitado e, caso o conteúdo seja um \textit{exercício}, as
-\textbf{alternativas selecionadas} (referências às alternativas). Importante
-notar que as alternativas selecionadas precisam fazer parte do conteúdo do tipo
-exercício referente ao evento. Os eventos de progresso podem ser visualizados
-pelo usuário e podem existir mais de um evento para o mesmo conteúdo. O usuário
-pode deletar eventos antigos a fim de reiniciar o seu progresso de acordo com a
-granularidade desejada.
+\textbf{\textit{evento de progresso}}, indicando o \textbf{\underline{horário}}
+(data e hora) onde foi feito o progresso, qual o \textbf{\underline{conteúdo}}
+(referência ao conteúdo) que foi visitado e, caso o conteúdo seja um
+\textit{exercício}, as \textbf{alternativas selecionadas} (referências às
+alternativas). Importante notar que as alternativas selecionadas precisam fazer
+parte do conteúdo do tipo exercício referente ao evento. Os eventos de
+progresso podem ser visualizados pelo usuário e podem existir mais de um evento
+para o mesmo conteúdo. O usuário pode deletar eventos antigos a fim de
+reiniciar o seu progresso de acordo com a granularidade desejada.
 
 %%%%%%%%%%%%%%%
 % Comentários %
 %%%%%%%%%%%%%%%
 
 Além disso, \textit{usuários autenticados}, podem deixar comentários em
-conteúdos, cada \textbf{comentário} é composto por um \textbf{corpo} (texto em
-MD), o \textbf{autor} (referência ao usuário que o criou), o \textbf{conteúdo}
-(referência ao conteúdo) em que o comentário foi feito, o \textbf{horário}
-(data e hora de criação) em que o horário foi feito, se ele é \textbf{visível}
-(booleano indicando se ele é exibido) para casos de deleção e, por fim, um
-comentário pode ser uma resposta, nesses casos temos o campo de
-\textbf{comentário pai} (referência opcional a um comentário) que indica qual
-comentário aquele responde. A presença desse mecanismo de respostas cria uma
-restrição de integridade onde precisamos garantir que, caso o comentário seja
-uma resposta, o conteúdo associado ao comentário pai seja o mesmo que o
-conteúdo referenciado presente em si. Além disso, a fim de evitar ciclos de
-relacionamento, precisamos garantir que, ao ir seguindo a cadeia de comentários
-pai, não haja a existência de um ciclo no momento da criação.
+conteúdos, cada \textbf{\textit{comentário}} é composto por um \textbf{corpo}
+(texto em MD), o \textbf{\underline{autor}} (referência ao usuário que o
+criou), o \textbf{\underline{conteúdo}} (referência ao conteúdo) em que o
+comentário foi feito, o \textbf{\underline{horário}} (data e hora de criação)
+em que o horário foi feito, se ele é \textbf{visível} (booleano indicando se
+ele é exibido) para casos de deleção e, por fim, um comentário pode ser uma
+resposta, nesses casos temos o campo de \textbf{comentário pai} (referência
+opcional a um comentário) que indica qual comentário aquele responde. A
+presença desse mecanismo de respostas cria uma restrição onde precisamos
+garantir que, caso o comentário seja uma resposta, o conteúdo associado ao
+comentário pai seja o mesmo que o conteúdo referenciado presente em si. Além
+disso, a fim de evitar ciclos de relacionamento, precisamos garantir que, ao ir
+seguindo a cadeia de comentários pai, não haja a existência de um ciclo no
+momento da criação.
 
 %%%%%%%%%%%
 % Reports %
 %%%%%%%%%%%
 
 A fim de garantir a moderação da plataforma, \textit{usuários autenticados}
-podem reportar comentários, para isso temos a entidade de \textbf{report}. Cada
-report consiste de um \textbf{autor} (referência ao usuário que fez o report),
-o \textbf{comentário reportado} (referência ao comentário sendo reportado), o
-\textbf{horário} (data e hora de criação) e, por fim, o indicador de
-\textbf{verificado} (booleano), que indica que aquele report já foi avaliado
-por um administrador.
-
-% Talvez: adicionar derivação de progresso nas categorias, tópicos...
+podem reportar comentários, para isso temos a entidade de
+\textbf{\textit{report}}. Cada report consiste de um \textbf{\underline{autor}}
+(referência ao usuário que fez o report), o \textbf{\underline{comentário
+    reportado}} (referência ao comentário sendo reportado), o
+\textbf{\underline{horário}} (data e hora de criação), o \textbf{motivo}
+(texto) e, por fim, o indicador de \textbf{verificado} (booleano), que indica
+que aquele report já foi avaliado por um administrador.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Funcionalidades
@@ -210,6 +212,78 @@ funcionalidades da plataforma da seguinte forma:
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Diagrama
+\begin{landscape}
+  \section{Diagrama do Modelo Entidade-Relacionamento}
+
+  \begin{figure}[h]
+    \includegraphics[height=0.76\textheight, center]{img/mer.png}
+    \caption{Diagrama do Modelo Entidade-Relacionamento}
+    \label{fig:mer}
+  \end{figure}
+\end{landscape}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Ciclos e restrições de integridade
 
 \section{Ciclos e Restrições de Integridade}
+
+A modelo proposto apresenta alguns ciclos naturais da solução e restrições de
+integridade necessárias, trataremos-as individualmente a seguir:
+
+\subsection{Ciclo: Comentário (Resposta) $\rightarrow$ Comentário (Respondido)}
+
+Este é um dos ciclos mais complicados do diagrama, ele se trata de um ciclo de
+dependência natural da modelagem, para solucioná-lo precisaremos garantir que
+duas restrições sejam satisfeitas:
+
+\begin{enumerate}
+  \item Ao criar uma resposta, precisamos garantir que a referência de conteúdo do
+        comentário respondido seja a mesma da resposta sendo criada.
+  \item Ao criar uma resposta, precisamos garantir que, ao seguir a cadeia de
+        comentários pais, não haja repetição de comentários (evitar ciclos, ex: $C_1
+          \rightarrow \rightarrow C_2 \rightarrow C_3 \rightarrow C1$). É possível
+        garantir isso ao impedir que o campo de comentário respondido seja editável.
+\end{enumerate}
+
+\subsection{Ciclo: Usuário $\rightarrow$ Comentário $\rightarrow$ Report}
+
+Este é um ciclo natural da modelagem, não é necessário nenhum tratamento
+especial, já que apenas indica a possibilidade (irônica) de um usuário reportar
+o próprio comentário.
+
+\subsection{Ciclo: Administrador $\rightarrow$ Feedback $\rightarrow$ Visualização Feedback}
+
+Mais um ciclo natural do diagrama, no sistema optamos por não restringir o
+administrador de fazer a maior parte das interações que um usuário convencional
+faria, sendo assim, caso um administrador crie um feedback, existe a
+possibilidade de que ele visualize o próprio feedback. Não é necessário nenhum
+tratamento adicional neste caso.
+
+\subsection{Ciclo: Conteúdo $\rightarrow$ Evento de Progresso $\rightarrow$ Alternativa}
+
+Este é um ciclo natural do diagrama, ele até poderia ser evitado por meio de
+uma especialização do Evento de Progresso, mas acreditamos que isso criaria uma
+complexidade desnecessária na modelagem sem benefícios práticos. Consistindo de
+um ciclo de dependência onde um Evento de Progresso, pode, opcionalmente, ter
+referências a alternativas selecionadas. Quando isso acontece, é necessário
+garantir que o conteúdo que a alternativa referencia (do tipo Exercício) seja o
+mesmo que é referenciado pelo Evento de Progresso, originando, então, uma
+restrição de integridade para que no momento de cadastro das alternativas
+associadas ao evento de progresso, seja verificada essa igualdade dos conteúdos
+referenciados.
+
+\subsection{Restrição adicional: Administradores precisam de um E-mail cadastrado}
+
+Para que um usuário se torne um administrador (campo admin igual a true), é
+necessário que seu campo de email não seja nulo, criando assim a necessidade de
+uma restrição de integridade adicional.
+
+\subsection{Restrição adicional: Administradores não podem ser banidos}
+
+Usuários administradores não podem ser banidos, por conta disso é necessário
+uma restrição de integridade que garanta que usuários banidos não se tornem
+administradores e que banimentos não sejam criados para administradores. É
+possível evitar isso também ao impedir que usuários existentes não se tornem
+administradores e nem administradores tornem-se usuários convencionais, mas não
+pretendemos seguir por este caminho.
