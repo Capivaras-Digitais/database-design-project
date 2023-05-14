@@ -287,3 +287,236 @@ administradores e que banimentos não sejam criados para administradores. É
 possível evitar isso também ao impedir que usuários existentes não se tornem
 administradores e nem administradores tornem-se usuários convencionais, mas não
 pretendemos seguir por este caminho.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Alterações para a segunda entrega
+
+\section{Alterações para a segunda entrega}
+
+Durante a segunda entrega do projeto, foram feitas pequenas correções no MER
+apresentado na primeira entrega, sendo elas: correção na cardinalidade faltante
+no relacionamento ``Progride'', correção na cardinalidade faltante no
+relacionamento ``Bane'' e adição da nota ``N3'' sobre a exigência de um e-mail
+não nulo para administradores.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Modelo Relacional
+
+\chapter{Modelo Relacional}
+
+\section{Mapeamento Modelo E-R para Modelo Relacional}
+
+A partir do MER apresentado no capítulo anterior, já com as devidas correções
+aplicadas, seguimos para o mapeamento do modelo E-R para o modelo relacional.
+Nele, tivemos que tomar algumas decisões específicas do contexto da aplicação,
+fazendo um julgamento entre as vantagens e desvantagens de cada uma das opções,
+principalmente no que se trata nos impactos de integridade, complexidade e
+performance. Seguiremos nas seções a seguir detalhando o diagrama final obtido
+e explicando as decisões tomadas.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Diagrama
+\begin{landscape}
+  \section{Diagrama Modelo Relacional}
+
+  \begin{figure}[h]
+    \includegraphics[height=0.76\textheight, center]{img/relacional.png}
+    \caption{Diagrama Modelo Relacional}
+    \label{fig:relacional}
+  \end{figure}
+\end{landscape}
+
+\section{Notas e Justificativas da Modelagem}
+
+\subsection{\textbf{J1:} Especialização de ``Usuário''}
+
+\subsubsection{Solução Adotada}
+
+Para a especialização de ``Usuário'', optamos por mapear as entidades em apenas
+uma tabela ``Usuário'', adicionando um campo ``admin'' (booleano) para indicar
+se o usuário é um administrador ou um usuário convencional. Acreditamos que
+essa solução é a mais adequada para o contexto da aplicação, já que, os campos
+entre cada tipo de usuário são os mesmos, impactando apenas os relacionamentos
+específicos de cada tipo de usuário, o que irá levar a necessidade de algumas
+restrições adicionais em nível de aplicação a fim de garantir a integridade.
+
+\subsubsection{Vantagens}
+
+Redução dos recursos de armazenamento e processamento, já que evita a criação
+de tabelas adicionais para cada tipo de usuário (que não teriam campos
+específicos).
+
+\subsubsection{Desvantagens}
+
+A principal desvantagem dessa abordagem é a integridade dos relacionamentos
+específicos de cada tipo de usuário, levando a necessidade de restrições
+adicionais em nível de aplicação para garantir integridade.
+
+\subsubsection{Alternativa}
+
+Uma solução alternativa consiste em termos tabelas específicas para cada tipo
+de especialização de usuário, porém, acreditamos que isso criaria uma
+complexidade adicional desnecessária, além dos impactos em armazenamento e
+processamento. Além disso, mesmo se optássemos por essa solução, não
+conseguiríamos evitar completamente as restrições adicionais em nível de
+aplicação, já que, mesmo com tabelas específicas para cada tipo de usuário,
+ainda teríamos que garantir que um usuário não se torne administrador e
+vice-versa.
+
+\subsection{\textbf{J2:} Adição de identificador sintético em ``Feedback''}
+
+\subsubsection{Solução Adotada}
+
+A fim de se evitar a replicação de uma chave muito grande nos relacionamentos
+de feedback, optamos pela adição de um identificador sintético. Além do mais, o
+uso de horário juntamente à referência do usuário havia sido uma solução mais
+voltada a favorecer a semântica do MER do que uma real necessidade de garantir
+a unicidade da combinação deste par de campos, sendo assim não os adicionaremos
+como uma chave secundária.
+
+\subsubsection{Vantagens}
+
+Redução dos recursos de armazenamento necessários para manter o índice de chave
+primária e redução da replicação de dados nas chaves estrangeiras que
+referenciam ``Feedback''.
+
+\subsubsection{Desvantagens}
+
+No contexto desta aplicação, não vemos desvantagens para a solução adotada.
+
+\subsubsection{Alternativa}
+
+A alternativa principal consiste em manter a chave primária composta por
+``horário'' e ``usuário'', porém acreditamos que este caminho levará a um
+aumento de complexidade nas entidades identificadas por Feedback sem benefícios
+suficientes.
+
+\subsection{\textbf{J3:} Mapeamento de relacionamento identificador ternário 1:1:N}
+
+\subsubsection{Solução Adotada}
+
+Os relacionamentos identificadores ternários 1:1:N foram mapeados por meio da
+inclusão dos campos identificadores das entidades identificadas pelo
+relacionamento, desta forma evitando a criação de tabelas adicionais sem
+prejuízos a integridade.
+
+\subsubsection{Vantagens}
+
+Evita os custos em termos de processamento e armazenamento de tabelas
+adicionais sem prejuízos a integridade.
+
+\subsubsection{Desvantagens}
+
+No contexto desta aplicação, não vemos desvantagens para a solução adotada.
+
+\subsubsection{Alternativa}
+
+A alternativa principal consiste na criação de uma tabela para cada um dos
+relacionamentos 1:1:N apontados, porém, como apontado acima, está solução
+apenas traria prejuízos dentro do contexto desta aplicação.
+
+\subsection{\textbf{J4:} Adição de identificadores sintéticos}
+
+\subsubsection{Solução Adotada}
+
+Além da entidade de ``Feedback'', algumas outras entidades do modelo relacional
+também receberam a adição de identificadores sintéticos a fim de evitar a
+replicação de chaves primárias muito grandes (geralmente textuais) nos
+relacionamentos identificadores. São os casos de ``Categoria'', ``Curso'',
+``Unidade'', ``Tópico'', ``Conteúdo'', ``Alternativa'', ``Comentário'' e
+``Evento de Progresso''. Além do mais, em todos estes casos a chave proposta no
+MER se tratava mais de questões semânticas do que de uma real necessidade de
+garantir quaisquer restrições de integridade na unicidade da combinação dos
+atributos, justificando, então, a não adição de chaves secundárias.
+
+\subsubsection{Vantagens}
+
+Redução dos recursos de armazenamento necessários para manter o índice de chave
+primária e redução da replicação de dados nas entidades identificadas por
+relacionamentos com estas entidades.
+
+\subsubsection{Desvantagens}
+
+No contexto desta aplicação, não vemos desvantagens para a solução adotada. A
+possível perda de integridade, conforme explicado anteriormente, não é um
+problema para a aplicação.
+
+\subsubsection{Alternativa}
+
+A principal alternativa a este caso seria manter as chaves primárias compostas,
+porém isso levaria a um grande aumento nos custos de armazenamento e
+processamento, ainda mais quando levamos em consideração a cadeia de chaves
+estrangeiras que levariam entidades como ``Conteúdo'' a terem chaves compostas
+por 5 campos textuais, sendo 4 deles replicação de dados resultantes da chave
+estrangeira apontando a ``Tópico''.
+
+\subsection{\textbf{J5:} Especialização de ``Conteúdo''}
+
+\subsubsection{Solução Adotada}
+
+Para a especialização de ``Conteúdo'', optamos por mapear as entidades por meio
+da entidade pai ``Conteúdo'', adicionando um campo ``tipo'' (enum) para indicar
+qual o tipo de conteúdo em questão, mantivemos também nessa tabela os campos em
+comum entre os conteúdos, que também são os mais relevantes em contextos de
+busca, poupando recursos de processamento quando comparado a isolar esses
+campos em cada sub-entidade. Para as especializações, optamos por criar uma
+entidade para cada uma, já que cada uma delas possui campos específicos que não
+são compartilhados entre todas, além de relacionamentos estritos a tipos de
+entidade. Dessa forma, conseguimos um bom balanço em garantir a integridade dos
+dados e evitar a replicação de dados. A única restrição de integridade que é
+importante garantirmos em nível de aplicação é que um conteúdo não pode ser de
+mais de um tipo ao mesmo tempo e deve necessariamente existir um registro na
+tabela de especialização associada ao seu tipo.
+
+\subsubsection{Vantagens}
+
+A principal vantagem dessa solução é a garantia de integridade dos dados, já
+que evita a replicação de dados e garante que um conteúdo de um certo tipo,
+exercerá apenas os relacionamentos que lhe são permitidos e manterá apenas os
+dados necessários.
+
+\subsubsection{Desvantagens}
+
+Em questão de desvantagens dessa solução, temos como principal problema a
+necessidade de processamento adicional para obter os dados específicos da
+especialização, porém isso não é de grande impacto para aplicação em questão.
+
+\subsubsection{Alternativa}
+
+Uma alternativa para este caso seria manter todos os campos de todas as
+especializações na entidade pai, porém isso levaria a um desperdício de
+recursos de armazenamento, já que teríamos campos nulos em parte dos registros.
+Além disso, as restrições de integridade dos relacionamentos teriam que ser
+garantidas em nível de aplicação.
+
+\subsection{\textbf{N1:} Ciclo de dependência da FK `Responde' de ``Comentário''}
+
+Será necessário, em nível de aplicação, garantir que o conteúdo referenciado na
+resposta seja o mesmo do comentário respondido. Além disso, é importante que
+não haja formação de um ciclo de respostas nos comentários.
+
+\subsection{\textbf{N2:} Ciclo de dependência das seleções de alternativas de ``Evento de Progresso''}
+
+Será necessário, em nível de aplicação, garantir que as alternativas
+selecionadas em ``SelecaoEventoProgreso'' façam parte do conteúdo referenciado
+em ``Evento de Progresso''.
+
+\subsection{\textbf{N3:} Administradores precisam de um e-mail cadastrado}
+
+Será necessário, em nível de aplicação, garantir que o campo de e-mail de
+administradores não seja nulo. Já que a entidade é compartilhada entre os dois
+tipos de usuário, não é possível garantir essa restrição no nível de modelagem
+relacional.
+
+\subsection{\textbf{N4:} Usuários administradores não podem ser banidos}
+
+Será necessário, em nível de aplicação, garantir que usuários administradores
+não sejam referenciados pelo campo `Banido' de ``Banimento'', já que
+administradores não deveriam poder ser banidos.
+
+\subsection{\textbf{N5:} Visualização de ``Feedback'' por administradores}
+
+Será necessário, em nível de aplicação, garantir que a referência
+`Administrador' de ``VisualizacaoFeedback'' aponte apenas para Usuários
+administradores, já que temos a mesma entidade para usuários convencionais e
+administradores.
