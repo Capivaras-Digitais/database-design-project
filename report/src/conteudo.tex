@@ -382,7 +382,9 @@ referenciam ``Feedback''.
 
 \subsubsection{Desvantagens}
 
-No contexto desta aplicação, não vemos desvantagens para a solução adotada.
+Para recuperar informações de um feedback, no contexto de uma chave estrangeira,
+será necessário realizar uma busca adicional na tabela ``Feedback''. Além disso,
+o mesmo ocorre para filtros que envolvam os campos ``horário'' e ``usuário''.
 
 \subsubsection{Alternativa}
 
@@ -424,10 +426,7 @@ também receberam a adição de identificadores sintéticos a fim de evitar a
 replicação de chaves primárias muito grandes (geralmente textuais) nos
 relacionamentos identificadores. São os casos de ``Categoria'', ``Curso'',
 ``Unidade'', ``Tópico'', ``Conteúdo'', ``Alternativa'', ``Comentário'' e
-``Evento de Progresso''. Além do mais, em todos estes casos a chave proposta no
-MER se tratava mais de questões semânticas do que de uma real necessidade de
-garantir quaisquer restrições de integridade na unicidade da combinação dos
-atributos, justificando, então, a não adição de chaves secundárias.
+``Evento de Progresso''.
 
 \subsubsection{Vantagens}
 
@@ -437,9 +436,10 @@ relacionamentos com estas entidades.
 
 \subsubsection{Desvantagens}
 
-No contexto desta aplicação, não vemos desvantagens para a solução adotada. A
-possível perda de integridade, conforme explicado anteriormente, não é um
-problema para a aplicação.
+Assim como apontado em \textbf{J2}, para recuperar informações de uma entidade
+identificada por uma chave estrangeira, será necessário realizar uma busca
+adicional na tabela da entidade em questão. Além disso, o mesmo ocorre para
+filtros que envolvam os campos que compunham originalmente a chave primária.
 
 \subsubsection{Alternativa}
 
@@ -463,23 +463,24 @@ campos em cada sub-entidade. Para as especializações, optamos por criar uma
 entidade para cada uma, já que cada uma delas possui campos específicos que não
 são compartilhados entre todas, além de relacionamentos estritos a tipos de
 entidade. Dessa forma, conseguimos um bom balanço em garantir a integridade dos
-dados e evitar a replicação de dados. A única restrição de integridade que é
-importante garantirmos em nível de aplicação é que um conteúdo não pode ser de
-mais de um tipo ao mesmo tempo e deve necessariamente existir um registro na
-tabela de especialização associada ao seu tipo.
+dados e evitar a replicação de dados. 
 
 \subsubsection{Vantagens}
 
 A principal vantagem dessa solução é a garantia de integridade dos dados, já
-que evita a replicação de dados e garante que um conteúdo de um certo tipo,
-exercerá apenas os relacionamentos que lhe são permitidos e manterá apenas os
-dados necessários.
+que evita a replicação de dados e manterá apenas os dados necessários.
 
 \subsubsection{Desvantagens}
 
 Em questão de desvantagens dessa solução, temos como principal problema a
 necessidade de processamento adicional para obter os dados específicos da
 especialização, porém isso não é de grande impacto para aplicação em questão.
+
+Além disso, será necessário garantir uma restrição de integridade em nível de 
+aplicação: garantir que um conteúdo não pode ser de mais de um tipo ao mesmo 
+tempo e deve necessariamente existir um registro na tabela de especialização 
+associada ao seu tipo. Isso porque a solução por si só em nível de modelagem
+não garante especialização total, nem disjunta.
 
 \subsubsection{Alternativa}
 
@@ -488,6 +489,34 @@ especializações na entidade pai, porém isso levaria a um desperdício de
 recursos de armazenamento, já que teríamos campos nulos em parte dos registros.
 Além disso, as restrições de integridade dos relacionamentos teriam que ser
 garantidas em nível de aplicação.
+
+\subsection{\textbf{J6:} Abstenção de atributos derivados}
+
+\subsubsection{Solução Adotada}
+
+A fim de evitar a necessidade de atualização de dados derivados, optamos por
+abster os mesmos do modelo relacional.
+
+\subsubsection{Vantagens}
+
+Maior garantia de consistência dos dados, já que não há a necessidade de
+atualização de dados derivados. Além disso, evita o armazenamento de dados
+redundantes.
+
+\subsubsection{Desvantagens}
+
+Para obter o valor dos atributos será necessário realizar uma busca adicional,
+o que irá aumentar o custo de processamento. Isso se tornaria principalmente
+problemático em contextos onde precisamos filtrar os dados por esses atributos,
+porém não será o caso desta aplicação.
+
+\subsubsection{Alternativa}
+
+A principal alternativa para este caso seria manter os atributos derivados no 
+modelo relacional, porém, nesse caso, as desvantagens são muito mais impactantes
+do que as vantagens. Além disso, caso eventualmente se torne necessário, é possível
+contornar os custos de processamento por meio do uso de views, ou até mesmo adicionar
+os atributos derivados no modelo relacional. 
 
 \subsection{\textbf{N1:} Ciclo de dependência da FK `Responde' de ``Comentário''}
 
