@@ -549,3 +549,324 @@ Será necessário, em nível de aplicação, garantir que a referência
 `Administrador' de ``VisualizacaoFeedback'' aponte apenas para Usuários
 administradores, já que temos a mesma entidade para usuários convencionais e
 administradores.
+
+\section{Alterações para a terceira entrega}
+
+Para a terceira entrega, adicionamos a justificativa de mapeamento dos atributos
+derivados do MER. Além disso, foi corrigido a ausência de algumas chaves 
+secundárias que estavam ausentes no modelo relacional. Por fim, algumas 
+justificativas tiveram o texto levemente modificado para melhorar a clareza e incluir
+detalhes que haviam ficado ausentes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Implementação
+
+\chapter{Implementação}
+
+
+\section{Sobre a implementação}
+
+A implementação do projeto foi feita utilizando o SGDB PostgreSQL. Essa decisão foi
+feita por conta de ser um banco de dados de código aberto, com uma comunidade ativa
+e um conjunto bem completo de funcionalidades. 
+
+Além disso, o código da implementação foi feito em Python 3, sem o uso de nenhum
+framework. Algumas bibliotecas externas foram utilizadas para facilitar a implementação,
+são essas o \textit{psycopg} (o 3) para a conexão com o banco de dados e o \textit{termcolor}
+para a impressão de mensagens coloridas no terminal.
+
+Além disso, é possível executar o projeto usando o \textit{Pipenv} para instalação
+das dependência e gerenciamento do ambiente virtual. E, para o banco de dados, o \textit{Docker
+Compose}, que irá criar um container com o banco de dados e executar os scripts SQL
+de criação do banco de dados e inserção de dados de teste. É importante atentar-se à
+configuração do ambiente usando o arquivo \textit{.env}. A principal configuração
+necessária é a URI de conexão com o banco de dados, por meio da variável \textit{DB\_URI}.
+
+As credenciais padrão para o banco de dados do \textit{Docker Compose} são: usuário 
+\textit{bee}, senha \textit{bee} e banco de dados \textit{bee}.
+
+\section{Repositório}
+
+O código fonte do projeto está disponível no \href{https://github.com/Capivaras-Digitais/database-design-project}{nosso repositório do GitHub}. Os scripts SQL de criação do banco de dados e inserção de dados de teste estão disponíveis na pasta \textit{sql}. O código fonte da implementação está disponível na pasta \textit{app}.
+
+\section{As consultas}
+
+Foram desenvolvidas as seguintes consultas de complexidade média:
+
+\subsection{Consulta 1}
+
+Rendimento de um usuário nos exercícios. Caso não tenha feito nenhum, o rendimento é 0.
+
+\begin{lstlisting}[language=SQL,caption={Consulta 1},label={lst:consulta1}]
+SELECT
+  ep.usuario,
+  COALESCE(
+    (
+      COUNT(
+        CASE
+          WHEN a.correta = TRUE THEN 1
+        END
+      ) :: NUMERIC / NULLIF(COUNT(a.correta), 0)
+    ),
+    0
+  ) AS rendimento,
+  COUNT(a.id) AS exercicios
+FROM
+  selecaoeventoprogresso sep
+  JOIN alternativa a ON sep.alternativa = a.id
+  RIGHT JOIN eventoprogresso ep ON ep.id = sep.evento
+GROUP BY
+  usuario;
+\end{lstlisting}
+
+\subsection{Consulta 2}
+
+Seleciona pessoas cujo tempo gasto em exercícios é maior que a média geral.
+
+\begin{lstlisting}[language=SQL,caption={Consulta 2},label={lst:consulta2}]
+SELECT
+  ep.usuario,
+  SUM(duracao) AS tempo
+FROM
+  eventoprogresso ep
+  JOIN conteudo c ON c.id = ep.conteudo
+WHERE
+  c.tipo = 'E'
+GROUP BY
+  ep.usuario
+HAVING
+  SUM(duracao) >= (
+    SELECT
+      AVG(s.soma)
+    FROM
+      (
+        SELECT
+          SUM(duracao) AS soma
+        FROM
+          eventoprogresso
+          JOIN conteudo cc ON cc.id = conteudo
+          AND tipo = 'E'
+        GROUP BY
+          usuario
+      ) s
+  );
+\end{lstlisting}
+
+\subsection{Consulta 3}
+
+Conteúdos com mais reports em comentários.
+
+\begin{lstlisting}[language=SQL,caption={Consulta 3},label={lst:consulta3}]
+SELECT
+  ct.titulo,
+  ct.subtitulo,
+  ct.tipo,
+  count(comentario) AS quantidade
+FROM
+  report r
+  JOIN comentario c ON r.comentario = c.id
+  JOIN conteudo ct ON c.conteudo = ct.id
+GROUP BY
+  ct.titulo,
+  ct.subtitulo,
+  ct.tipo
+ORDER BY
+  quantidade DESC;
+\end{lstlisting}
+
+\subsection{Consulta 4}
+
+Interseção dos conteúdos vistos por usuários banidos e por usuários não banidos.
+
+
+\begin{lstlisting}[language=SQL,caption={Consulta 4},label={lst:consulta4}]
+SELECT
+  c.titulo,
+  c.tipo
+FROM
+  (
+    (
+      SELECT
+        conteudo
+      FROM
+        eventoprogresso ep
+        JOIN (
+          SELECT
+            nome
+          FROM
+            usuario
+          EXCEPT
+          SELECT
+            banido
+          FROM
+            banimento
+        ) nb ON nb.nome = ep.usuario
+    )
+    INTERSECT
+    (
+      SELECT
+        conteudo
+      FROM
+        eventoprogresso ep2
+        JOIN (
+          SELECT
+            nome
+          FROM
+            usuario u
+            JOIN banimento b ON b.banido = u.nome
+        ) bn ON bn.nome = ep2.usuario
+    )
+  ) i
+  JOIN conteudo c ON (i.conteudo = c.id)
+ORDER BY
+  length(c.titulo),
+  c.titulo;
+\end{lstlisting}
+
+\subsection{Consulta 5 - Divisão Relacional}
+
+Selecionar todos administradores que visualizaram o feedback de pelo menos os usuários que
+a admin ``carolina456'' visualizou.
+
+\begin{lstlisting}[language=SQL,caption={Consulta 5},label={lst:consulta5}]
+SELECT
+  DISTINCT administrador
+FROM
+  visualizacaofeedback vf
+WHERE
+  NOT EXISTS(
+    (
+      SELECT
+        usuario
+      FROM
+        visualizacaofeedback vf2
+        JOIN feedback f ON f.id = vf2.feedback
+      WHERE
+        vf2.administrador = 'carolina456'
+    )
+    EXCEPT
+      (
+        SELECT
+          usuario
+        FROM
+          visualizacaofeedback vf3
+          JOIN feedback f ON f.id = vf3.feedback
+        WHERE
+          vf.administrador = vf3.administrador
+      )
+  )
+\end{lstlisting}
+
+\section{Consultas da aplicação}
+
+
+\subsection{Inserção de usuário}
+
+O código apresentado pode ser encontrado em \href{}{\textit{app/src/model/usuario.py} na linha 113}.
+
+\begin{lstlisting}[language=Python,caption={Inserção de usuário},label={lst:insercao_usuario}]
+  def insert_usuario(usuario: Usuario) -> Usuario:
+    """Insert a usuario into the database.
+
+    Args:
+        usuario (Usuario): The usuario to insert.
+
+    Returns:
+        Usuario: The inserted usuario.
+    """
+    
+    if PASSWORD_RE.match(usuario.senha) is None:
+        raise Exception('Senha inválida')
+    
+    usuario.senha = hash_password(usuario.senha)
+    
+    with get_conn_pool().connection() as conn:
+        with conn.cursor() as cursor: 
+            try:
+                cursor.execute('INSERT INTO usuario VALUES (%s, %s, %s, %s);', usuario.to_tuple())
+                conn.commit()
+                return usuario
+            except IntegrityError as e:
+                conn.rollback()
+                for constraint, message in KNOWN_CONSTRAINTS.items():
+                    if constraint in str(e):
+                        raise Exception(message)
+                raise Exception('Um erro inesperado ocorreu: ' + str(e))
+            except Exception as e:
+                print(repr(e), file=sys.stderr)
+                conn.rollback()
+                raise e
+\end{lstlisting}
+
+\subsection{Obtenção de usuário por nome}
+
+O código apresentado pode ser encontrado em \href{}{\textit{app/src/model/usuario.py} na linha 146}.
+
+\begin{lstlisting}[language=Python,caption={Obtenção de usuário},label={lst:obtencao_usuario}]
+def get_usuario(nome: str) -> Optional[Usuario]:
+    """Get a usuario from the database by nome.
+
+    Args:
+        nome (str): The nome of the usuario to get.
+
+    Returns:
+        Optional[Usuario]: The usuario if it exists, None otherwise.
+    """
+    
+    with get_conn_pool().connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT * FROM usuario WHERE nome = %s;', (nome,))
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            return Usuario.from_tuple(row)
+\end{lstlisting}
+
+
+\subsection{Listagem de todos os usuários}
+
+O código apresentado pode ser encontrado em \href{}{\textit{app/src/model/usuario.py} na linha 100}.
+
+\begin{lstlisting}[language=Python,caption={Listagem de usuários},label={lst:listagem_usuarios}]
+def list_usuarios() -> List[Usuario]:
+    """List all usuarios in the database.
+
+    Returns:
+        List[Usuario]: A list of all usuarios in the database.
+    """
+    
+    with get_conn_pool().connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT * FROM usuario;')
+            return [Usuario.from_tuple(row) for row in cursor.fetchall()]
+\end{lstlisting}
+
+\subsection{Busca simples de usuários (por nome e/ou email)}
+
+O código apresentado pode ser encontrado em \href{}{\textit{app/src/model/usuario.py} na linha 84}.
+
+\begin{lstlisting}[language=Python,caption={Busca simples de usuários},label={lst:busca_simples_usuarios}]
+def search_usuarios(query: str) -> List[Usuario]:
+    """Search for usuarios in the database by a given query. The
+    query will be tried to match against the textual fields "nome" and "email".
+
+    Args:
+        query (str): The query to search for.
+        
+    Returns:
+        List[Usuario]: A list of usuarios that match the query.
+    """
+
+    with get_conn_pool().connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT * FROM usuario WHERE nome ILIKE %s OR email ILIKE %s;', (f'%{query}%', f'%{query}%'))
+            return [Usuario.from_tuple(row) for row in cursor.fetchall()]
+\end{lstlisting}
+
+\chapter{Conclusão}
+
+Este projeto nos proporcionou uma valiosa oportunidade de aprofundar nosso conhecimento sobre o intrincado funcionamento de um banco de dados relacional. Pudemos praticar e aperfeiçoar nossas habilidades na modelagem de um banco de dados e na elaboração de consultas SQL. O percurso completo, desde a captação minuciosa dos requisitos até a implementação de uma aplicação integralmente funcional que utiliza o banco de dados, foi uma experiência altamente enriquecedora e repleta de aprendizado.
+
+Contudo, a execução deste projeto não foi sem obstáculos. O principal desafio foi gerenciar esse empreendimento complexo enquanto navegávamos por uma miríade de outras atividades acadêmicas. Tarefas de outras disciplinas, avaliações e o fato de estarmos em um dos períodos mais exigentes do curso adicionaram uma camada extra de dificuldade à nossa gestão do tempo.
+
+Mesmo assim, reconhecemos a importância vital deste trabalho para nossa formação. Talvez, se tivermos a liberdade de escolher um tema mais abrangente no futuro, possamos encontrar maneiras de integrá-lo com outras disciplinas. Essa abordagem interdisciplinar, embora não oficial, poderia aumentar a relevância e o interesse pelo projeto, tornando a experiência ainda mais significativa.

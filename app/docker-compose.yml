@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    volumes:
+      - db-vol:/var/lib/postgresql/data
+      - ../sql/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
+      - ../sql/sample-data.sql:/docker-entrypoint-initdb.d/01-sample-data.sql
+    environment:
+      POSTGRES_USER: bee
+      POSTGRES_PASSWORD: bee
+      POSTGRES_DB: bee
+    ports:
+      - 5432:5432
+
+
+volumes:
+  db-vol:
